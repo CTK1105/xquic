@@ -1,6 +1,6 @@
 # Copyright (c) 2022, Alibaba Group Holding Limited
 
-cmake_minimum_required (VERSION 3.5)
+cmake_minimum_required (VERSION 2.6)
 project (xquic)
 
 set (xquic_VERSION_MAJOR 0)
@@ -81,7 +81,7 @@ if(XQC_SUPPORT_SENDMMSG_BUILD)
 endif()
 
 if(ANDROID)
-    set(DYMAMIC_LINK_OPTION 
+    set(DYMAMIC_LINK_OPTION
         ${DYMAMIC_LINK_OPTION}
         -lm
         -llog)
@@ -115,9 +115,9 @@ if (XQC_BUILD_OPENSSL)
         add_subdirectory(external/openssl-cmake)
     endif()
 
-    set(DYMAMIC_LINK_OPTION 
-            ssl 
-            crypto 
+    set(DYMAMIC_LINK_OPTION
+            ssl
+            crypto
             ${DYMAMIC_LINK_OPTION}
         )
 
@@ -344,16 +344,6 @@ if(XQC_ENABLE_UNLIMITED)
     )
 endif()
 
-# add tunnel
-if(XQC_ENABLE_TH3 OR XQC_ENABLE_TUNNEL)
-    set(
-        XQC_SOURCE
-    )
-    if(XQC_ENABLE_TNL_DG)
-        set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -DXQC_ENABLE_TNL_DG ")
-    endif()
-    add_subdirectory(tunnel)
-endif()
 
 if (XQC_NO_SHARED)
     set(XQC_BINARY_TYPE STATIC)
@@ -374,7 +364,7 @@ add_dependencies(xquic xquic_global)
 
 if (NOT XQC_NO_SHARED)
     target_link_libraries(
-        xquic 
+        xquic
         ${DYMAMIC_LINK_OPTION}
         -pthread
     )
@@ -397,4 +387,3 @@ if (XQC_BUILD_SAMPLE)
     target_link_libraries(test_client xquic event)
     target_link_libraries(test_server xquic event)
 endif()
-
