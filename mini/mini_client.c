@@ -1,6 +1,7 @@
 #include "mini_client.h"
 
 #include <netdb.h>
+#include "src/transport/scheduler/xqc_scheduler_sttf.h"
 
 void
 xqc_mini_cli_init_engine_ssl_config(xqc_engine_ssl_config_t *ssl_cfg, xqc_mini_cli_args_t *args)
@@ -154,9 +155,9 @@ xqc_mini_cli_init_env(xqc_mini_cli_ctx_t *ctx, xqc_mini_cli_args_t *args)
 xqc_scheduler_callback_t
 xqc_mini_cli_get_sched_cb(xqc_mini_cli_args_t *args)
 {
-    xqc_scheduler_callback_t sched = xqc_minrtt_scheduler_cb;
-    if (strncmp(args->quic_cfg.mp_sched, "minrtt", strlen("minrtt")) == 0) {
-        sched = xqc_minrtt_scheduler_cb;
+    xqc_scheduler_callback_t sched = xqc_sttf_scheduler_cb;
+    if (strncmp(args->quic_cfg.mp_sched, "sttf", strlen("sttf")) == 0) {
+        sched = xqc_sttf_scheduler_cb;
 
     } if (strncmp(args->quic_cfg.mp_sched, "backup", strlen("backup")) == 0) {
         sched = xqc_backup_scheduler_cb;

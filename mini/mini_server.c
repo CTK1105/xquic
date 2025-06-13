@@ -1,5 +1,5 @@
 #include "mini_server.h"
-
+#include "src/transport/scheduler/xqc_scheduler_sttf.h"
 void
 xqc_mini_svr_init_ssl_config(xqc_engine_ssl_config_t  *ssl_cfg, xqc_mini_svr_args_t *args)
 {
@@ -39,7 +39,7 @@ xqc_mini_svr_init_args(xqc_mini_svr_args_t *args)
     args->quic_cfg.session_ticket_key_len = ret > 0 ? ret : 0;
     args->quic_cfg.cc = CC_TYPE_BBR;
     args->quic_cfg.multipath = 1;
-    strncpy(args->quic_cfg.mp_sched, "minrtt", 32);
+    strncpy(args->quic_cfg.mp_sched, "sttf", 32);
     strncpy(args->quic_cfg.ciphers, XQC_TLS_CIPHERS, CIPHER_SUIT_LEN - 1);
     strncpy(args->quic_cfg.groups, XQC_TLS_GROUPS, TLS_GROUPS_LEN - 1);
 
@@ -174,9 +174,9 @@ xqc_mini_svr_get_cc_cb(xqc_mini_svr_args_t *args)
 xqc_scheduler_callback_t
 xqc_mini_svr_get_sched_cb(xqc_mini_svr_args_t *args)
 {
-    xqc_scheduler_callback_t sched = xqc_minrtt_scheduler_cb;
-    if (strncmp(args->quic_cfg.mp_sched, "minrtt", strlen("minrtt")) == 0) {
-        sched = xqc_minrtt_scheduler_cb;
+    xqc_scheduler_callback_t sched = xqc_sttf_scheduler_cb;
+    if (strncmp(args->quic_cfg.mp_sched, "sttf", strlen("sttf")) == 0) {
+        sched = xqc_sttf_scheduler_cb;
 
     } if (strncmp(args->quic_cfg.mp_sched, "backup", strlen("backup")) == 0) {
         sched = xqc_backup_scheduler_cb;

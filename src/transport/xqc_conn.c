@@ -33,6 +33,8 @@
 #include "src/transport/xqc_fec_scheme.h"
 #include "src/tls/xqc_tls.h"
 #include <inttypes.h>
+#include "src/transport/scheduler/xqc_scheduler_sttf.h"
+
 
 
 xqc_conn_settings_t internal_default_conn_settings = {
@@ -709,7 +711,7 @@ xqc_conn_create(xqc_engine_t *engine, xqc_cid_t *dcid, xqc_cid_t *scid,
 
         } else {
             /* do not reinject packets on the same path */
-            xc->conn_settings.scheduler_callback = xqc_minrtt_scheduler_cb;
+            xc->conn_settings.scheduler_callback = xqc_sttf_scheduler_cb;
         }
 
         xc->conn_settings.reinj_ctl_callback = xqc_dgram_reinj_ctl_cb;
@@ -999,7 +1001,7 @@ xqc_conn_create(xqc_engine_t *engine, xqc_cid_t *dcid, xqc_cid_t *scid,
         xc->scheduler_callback = &xc->conn_settings.scheduler_callback;
 
     } else {
-        xc->scheduler_callback = &xqc_minrtt_scheduler_cb;
+        xc->scheduler_callback = &xqc_sttf_scheduler_cb;
     }
 
     xc->scheduler = xqc_pcalloc(xc->conn_pool, xc->scheduler_callback->xqc_scheduler_size());
@@ -3615,7 +3617,7 @@ xqc_conn_get_stats_internal(xqc_connection_t *conn, xqc_conn_stats_t *conn_stats
 
         } else {
             conn_stats->srtt = conn->conn_initial_path->path_send_ctl->ctl_srtt;
-            conn_stats->min_rtt = conn->conn_initial_path->path_send_ctl->ctl_minrtt;
+            conn_stats->min_rtt = conn->conn_initial_path->path_send_ctl->ctl_sttf;
         }
         
         xqc_recv_record_print(conn, &conn->conn_initial_path->path_pn_ctl->ctl_recv_record[XQC_PNS_APP_DATA],
@@ -3713,7 +3715,7 @@ xqc_conn_get_qos_stats(xqc_engine_t *engine, const xqc_cid_t *cid)
 
         } else {
             qos_stats.srtt = conn->conn_initial_path->path_send_ctl->ctl_srtt;
-            qos_stats.min_rtt = conn->conn_initial_path->path_send_ctl->ctl_minrtt;
+            qos_stats.min_rtt = conn->conn_initial_path->path_send_ctl->ctl_sttf;
         }
     }
 

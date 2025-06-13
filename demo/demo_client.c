@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include <netdb.h>
 #endif
+#include "src/transport/scheduler/xqc_scheduler_sttf.h"
 
 
 #define XQC_PACKET_TMP_BUF_LEN  1600
@@ -1691,9 +1692,9 @@ xqc_demo_cli_init_conneciton_settings(xqc_conn_settings_t* settings,
         break;
     }
 
-    xqc_scheduler_callback_t sched = xqc_minrtt_scheduler_cb;
-    if (strncmp(args->quic_cfg.mp_sched, "minrtt", strlen("minrtt")) == 0) {
-        sched = xqc_minrtt_scheduler_cb;
+    xqc_scheduler_callback_t sched = xqc_sttf_scheduler_cb;
+    if (strncmp(args->quic_cfg.mp_sched, "sttf", strlen("sttf")) == 0) {
+        sched = xqc_sttf_scheduler_cb;
 
     } if (strncmp(args->quic_cfg.mp_sched, "backup", strlen("backup")) == 0) {
         sched = xqc_backup_scheduler_cb;
@@ -1906,7 +1907,7 @@ xqc_demo_cli_usage(int argc, char *argv[])
         "   -i    interface to create a path. For instance, we can use '-i lo -i lo' to create two paths via lo.\n"
         "   -w    waiting N ms to start the first request.\n"
         "   -P    enable MPQUIC to return ACK_MPs on any paths.\n"
-        "   -s    multipath scheduler (interop, minrtt, backup), default: interop\n"
+        "   -s    multipath scheduler (interop, sttf, backup), default: interop\n"
         "   -b    set the second path as a backup path\n"
         "   -Z    close one path after X ms\n"
         "   -z    path id to be closed\n"
