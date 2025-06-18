@@ -86,12 +86,21 @@ xqc_sttf_scheduler_get_path(void *scheduler,
              uint64_t available_capacity = (bytes_in_flight < path_cwnd) ?
              (path_cwnd - bytes_in_flight) : 0;
 
+             /* Log pre-calculation metrics */
+             xqc_log(conn->log, XQC_LOG_DEBUG,
+                "|STTF pre-calculation|conn:%p|path_id:%ui|srtt:%ui|bw:%ui|"
+                "cwnd:%ui|inflight:%ui|avail_cap:%ui|pkt_size:%ui|",
+                conn, path->path_id, path_srtt, path_bw, path_cwnd,
+                bytes_in_flight, available_capacity, packet_out->po_used_size);
+
              if (path_bw > 0 && available_capacity > 0) {
                  uint64_t available_bandwidth = xqc_min(path_bw,
                                                         (available_capacity * 1000000) / (path_srtt > 0 ? path_srtt : 1));
 
                  path_transmission_time = path_srtt +
                  (packet_out->po_used_size * 1000000) / (available_bandwidth > 0 ? available_bandwidth : 1);
+
+
              } else {
                  /* If bandwidth is zero, use srtt as fallback */
                  path_transmission_time = path_srtt;
@@ -103,6 +112,18 @@ xqc_sttf_scheduler_get_path(void *scheduler,
                  best_path[path_class] = path;
                  min_transmission_time[path_class] = path_transmission_time;
              }
+
+             /* Final path metrics log */
+                xqc_log(conn->log, XQC_LOG_DEBUG,
+                "|path sttf result|conn:%p|path_id:%ui|srtt:%ui|bw:%ui|cwnd:%ui|"
+                "inflight:%ui|avail_cap:%ui|trans_time:%ui|path_class:%d|"
+                "can_send:%d|path_status:%d|path_state:%d|reinj:%d|"
+                "pkt_path_id:%ui|best_path:%i|",
+                conn, path->path_id, path_srtt, path_bw, path_cwnd,
+                bytes_in_flight, available_capacity, path_transmission_time, path_class,
+                path_can_send, path->app_path_status, path->path_state, reinject,
+                packet_out->po_path_id,
+                best_path[path_class] ? best_path[path_class]->path_id : -1);
 
              skip_path:
              xqc_log(conn->log, XQC_LOG_DEBUG,
