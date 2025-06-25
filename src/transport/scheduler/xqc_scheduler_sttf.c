@@ -87,7 +87,7 @@ xqc_sttf_scheduler_get_path(void *scheduler,
              (path_cwnd - bytes_in_flight) : 0;
 
              /* Log pre-calculation metrics */
-             xqc_log(conn->log, XQC_LOG_DEBUG,
+             xqc_log(conn->log, XQC_LOG_ERROR,
                 "|STTF pre-calculation|conn:%p|path_id:%ui|srtt:%ui|bw:%ui|"
                 "cwnd:%ui|inflight:%ui|avail_cap:%ui|pkt_size:%ui|",
                 conn, path->path_id, path_srtt, path_bw, path_cwnd,
@@ -114,7 +114,7 @@ xqc_sttf_scheduler_get_path(void *scheduler,
              }
 
              /* Final path metrics log */
-                xqc_log(conn->log, XQC_LOG_DEBUG,
+                xqc_log(conn->log, XQC_LOG_ERROR,
                 "|path sttf result|conn:%p|path_id:%ui|srtt:%ui|bw:%ui|cwnd:%ui|"
                 "inflight:%ui|avail_cap:%ui|trans_time:%ui|path_class:%d|"
                 "can_send:%d|path_status:%d|path_state:%d|reinj:%d|"
@@ -126,7 +126,7 @@ xqc_sttf_scheduler_get_path(void *scheduler,
                 best_path[path_class] ? best_path[path_class]->path_id : -1);
 
              skip_path:
-             xqc_log(conn->log, XQC_LOG_DEBUG,
+             xqc_log(conn->log, XQC_LOG_ERROR,
                      "|path sttf|conn:%p|path_id:%ui|srtt:%ui|bw:%ui|cwnd:%ui|"
                      "inflight:%ui|avail_cap:%ui|trans_time:%ui|path_class:%d|"
                      "can_send:%d|path_status:%d|path_state:%d|reinj:%d|"
@@ -143,7 +143,7 @@ xqc_sttf_scheduler_get_path(void *scheduler,
     path_class++)
               {
                   if (best_path[path_class] != NULL) {
-                      xqc_log(conn->log, XQC_LOG_DEBUG, "|best path:%ui|frame_type:%s|"
+                      xqc_log(conn->log, XQC_LOG_ERROR, "|best path:%ui|frame_type:%s|"
                       "pn:%ui|size:%ud|reinj:%d|path_class:%d|trans_time:%ui|",
                       best_path[path_class]->path_id,
                       xqc_frame_type_2_str(conn->engine, packet_out->po_frame_types),
@@ -154,7 +154,7 @@ xqc_sttf_scheduler_get_path(void *scheduler,
                   }
               }
 
-              xqc_log(conn->log, XQC_LOG_DEBUG, "|No available paths to schedule|conn:%p|", conn);
+              xqc_log(conn->log, XQC_LOG_ERROR, "|No available paths to schedule|conn:%p|", conn);
               return NULL;
 }
 
